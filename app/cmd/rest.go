@@ -23,8 +23,8 @@ func controller() {
 }
 
 func health(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "GET" && r.URL.Path != "health" {
-		errorHandler(w, r, http.StatusNotFound)
+	if r.Method != http.MethodGet {
+		http.NotFound(w, r)
 		return
 	}
 
@@ -34,14 +34,13 @@ func health(w http.ResponseWriter, r *http.Request) {
 
 	data := response{"healthy"}
 
-	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(data)
 }
 
 func helloWorld(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "GET" && r.URL.Path != "hello-world" {
-		errorHandler(w, r, http.StatusNotFound)
+	if r.Method != http.MethodGet {
+		http.NotFound(w, r)
 		return
 	}
 
@@ -51,15 +50,6 @@ func helloWorld(w http.ResponseWriter, r *http.Request) {
 
 	data := response{"hello world"}
 
-	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(data)
-}
-
-func errorHandler(w http.ResponseWriter, r *http.Request, status int) {
-	if status == http.StatusNotFound {
-		w.WriteHeader(status)
-		w.Header().Set("Content-Type", "application/json")
-		w.Write([]byte(`{"error_code": "Page not found"}`))
-	}
 }
