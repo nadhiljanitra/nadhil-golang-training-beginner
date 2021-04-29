@@ -5,10 +5,12 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/nadhiljanitra/nadhil-golang-training-beginner/app/config"
 	"github.com/nadhiljanitra/nadhil-golang-training-beginner/healthcheck"
 )
 
 func InitRest() {
+	config.InitPostgres()
 	controller()
 }
 
