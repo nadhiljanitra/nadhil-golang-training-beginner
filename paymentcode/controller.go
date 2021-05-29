@@ -2,7 +2,6 @@ package code
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/nadhiljanitra/nadhil-golang-training-beginner/common"
@@ -38,8 +37,6 @@ func (e paymentEndpoint) getPaymentCodeById(w http.ResponseWriter, r *http.Reque
 		common.ErrorHandler(err, w, r)
 		return
 	}
-
-	fmt.Println("\npaymentCode ", paymentCode)
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(paymentCode)

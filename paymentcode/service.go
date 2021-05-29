@@ -2,7 +2,6 @@ package code
 
 import (
 	"context"
-	"fmt"
 	"strings"
 	"time"
 )
@@ -42,9 +41,7 @@ func (d defaultService) FindPaymentCodeById(id string) (PaymentCode, error) {
 		return PaymentCode{}, err
 	}
 
-	fmt.Println("\n PAYMENT CODE =====<> ", paymentCode)
-
-	return PaymentCode{}, nil
+	return paymentCode, nil
 }
 
 func getPaymentCodeIDFromUrl(url string) string {

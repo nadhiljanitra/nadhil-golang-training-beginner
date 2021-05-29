@@ -3,6 +3,7 @@ package code
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"time"
 
@@ -32,24 +33,6 @@ func (s sqlRepository) FindPaymentCodeById(ctx context.Context, id string) (Paym
 	var createdAt time.Time
 	var updatedAt time.Time
 
-	rows, err := s.DB.QueryContext(ctx, "SELECT id, payment_code, name, status, expiration_date FROM payment_codes WHERE id=%?", id)
-	if err != nil {
-		//TODO update the logger here
-		fmt.Println("Error on pq, ", err)
-		return PaymentCode{}, fmt.Errorf("%w", common.ErrUnexpected)
-	}
-	defer rows.Close()
-
-	err = rows.Scan(
-		&ID,
-		&paymentCode,
-		&name,
-		&status,
-		&expirationDate,
-		&createdAt,
-		&updatedAt,
-	)
-
 	result := PaymentCode{
 		ID:             ID,
 		PaymentCode:    paymentCode,
@@ -58,6 +41,24 @@ func (s sqlRepository) FindPaymentCodeById(ctx context.Context, id string) (Paym
 		ExpirationDate: expirationDate,
 		CreatedAt:      createdAt,
 		UpdatedAt:      updatedAt,
+	}
+
+	row := s.DB.QueryRowContext(ctx, "SELECT id, payment_code, name, status, expiration_date FROM payment_codes WHERE id=$1", id)
+
+	err := row.Scan(
+		&ID,
+		&paymentCode,
+		&name,
+		&status,
+		&expirationDate,
+		&createdAt,
+		&updatedAt,
+	)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return result, fmt.Errorf("%w", common.ErrNotFound)
+		}
+		return result, err
 	}
 
 	return result, nil
