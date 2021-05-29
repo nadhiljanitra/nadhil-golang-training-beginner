@@ -8,7 +8,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func InitPostgres() {
+func InitPostgres() (*sql.DB, error) {
 	dbHost := os.Getenv("POSTGRES_HOST")
 	dbPort := os.Getenv("POSTGRES_PORT")
 	dbUserName := os.Getenv("POSTGRES_USER")
@@ -19,17 +19,19 @@ func InitPostgres() {
 
 	fmt.Printf(pgDsn)
 
-	db, err := sql.Open("postgres", pgDsn)
+	dbConn, err := sql.Open("postgres", pgDsn)
 	if err != nil {
 		panic(err)
 	}
 
-	defer db.Close()
+	// defer dbConn.Close()
 
-	err = db.Ping()
+	err = dbConn.Ping()
 	if err != nil {
 		panic(err)
 	}
 
 	fmt.Printf("\nSuccessfully connected to db!\n")
+
+	return dbConn, nil
 }
