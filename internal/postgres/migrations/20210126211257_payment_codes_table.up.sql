@@ -1,7 +1,7 @@
 BEGIN;
 CREATE TABLE IF NOT EXISTS payment_codes
 (
-    id              VARCHAR         NOT NULL PRIMARY KEY,
+    id              SERIAL         NOT NULL PRIMARY KEY,
     payment_code    VARCHAR         NOT NULL,
     name            VARCHAR         NOT NULL,
     status          VARCHAR         NOT NULL,
