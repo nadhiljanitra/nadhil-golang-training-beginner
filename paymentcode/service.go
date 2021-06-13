@@ -3,7 +3,6 @@ package code
 import (
 	"context"
 	"errors"
-	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -34,7 +33,7 @@ func (d defaultService) FindPaymentCodeById(id string) (PaymentCode, error) {
 	ID, err := strconv.Atoi(id)
 	if err != nil {
 		if errors.Is(err, strconv.ErrSyntax) {
-			fmt.Printf("\nPayment code must be a number")
+			// fmt.Printf("\nPayment code must be a number")
 			// Put as NotFound 404 to satisfy the postman test where it should be errIllegalArg
 			return PaymentCode{}, common.ErrNotFound
 		}
