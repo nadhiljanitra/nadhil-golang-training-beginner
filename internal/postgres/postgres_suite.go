@@ -103,3 +103,7 @@ func (s *Suite) AfterTest(suiteName, testName string) {
 	s.Require().NoError(err)
 	s.Require().True(ok)
 }
+
+func (s *Suite) DB() *sql.DB {
+	return s.db
+}
