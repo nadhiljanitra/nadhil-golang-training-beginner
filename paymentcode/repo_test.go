@@ -24,9 +24,9 @@ func TestRepoIntegrationSuite(t *testing.T) {
 	migrationsDir := path.Join(filepath.Dir(b), "..", "..", "nadhil-golang-training-beginner", "internal", "postgres", "migrations")
 	repoSuite := postgres.NewDefaultSuite(migrationsDir)
 
-	slipSuite := &repoIntegrationSuite{*repoSuite}
+	codeSuite := &repoIntegrationSuite{*repoSuite}
 
-	suite.Run(t, slipSuite)
+	suite.Run(t, codeSuite)
 }
 
 func (s repoIntegrationSuite) TestInsertPaymentCode() {
