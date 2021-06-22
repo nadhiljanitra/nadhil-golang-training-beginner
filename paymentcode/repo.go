@@ -33,7 +33,18 @@ func (s sqlRepository) FindPaymentCodeById(ctx context.Context, id int) (Payment
 	var createdAt time.Time
 	var updatedAt time.Time
 
-	row := s.DB.QueryRowContext(ctx, "SELECT id, payment_code, name, status, expiration_date, created_at, updated_at FROM payment_codes WHERE id=$1", id)
+	row := s.DB.QueryRowContext(ctx, `
+	SELECT 
+	id, 
+	payment_code, 
+	name, 
+	status, 
+	expiration_date, 
+	created_at, 
+	updated_at 
+	FROM payment_codes 
+	WHERE id=$1`,
+		id)
 
 	err := row.Scan(
 		&ID,
@@ -68,7 +79,12 @@ func (s sqlRepository) FindPaymentCodeById(ctx context.Context, id int) (Payment
 func (s sqlRepository) GeneratePaymentCode(ctx context.Context, r PaymentCode) (PaymentCode, error) {
 	var ID int
 
-	result := s.DB.QueryRowContext(ctx, "INSERT into payment_codes (payment_code, name, status, expiration_date, created_at, updated_at) values ($1,$2,$3,$4,$5,$6) RETURNING id", r.PaymentCode, r.Name, r.Status, r.ExpirationDate, r.CreatedAt, r.UpdatedAt)
+	result := s.DB.QueryRowContext(ctx, `
+	INSERT into payment_codes 
+	(payment_code, name, status, expiration_date, created_at, updated_at) 
+	values ($1,$2,$3,$4,$5,$6) 
+	RETURNING id`,
+		r.PaymentCode, r.Name, r.Status, r.ExpirationDate, r.CreatedAt, r.UpdatedAt)
 	err := result.Scan(&ID)
 	if err != nil {
 		return PaymentCode{}, err
