@@ -34,17 +34,14 @@ var errorMapping = map[error]HTTPError{
 }
 
 func ErrorHandler(err error, w http.ResponseWriter, r *http.Request) {
-
 	for mapErr, res := range errorMapping {
 		if errors.Is(err, mapErr) {
 			returnError(w, r, res.StatusCode, HTTPErrorResponse{
 				ErrorCode: res.ErrorCode,
 				Message:   err.Error(),
 			})
-
 		}
 	}
-
 }
 
 func returnError(w http.ResponseWriter, r *http.Request, statusCode int, httpError HTTPErrorResponse) {
