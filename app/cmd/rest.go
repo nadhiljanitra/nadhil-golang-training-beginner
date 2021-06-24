@@ -1,55 +1,39 @@
 package cmd
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/nadhiljanitra/nadhil-golang-training-beginner/app/config"
+	"github.com/nadhiljanitra/nadhil-golang-training-beginner/healthcheck"
+	code "github.com/nadhiljanitra/nadhil-golang-training-beginner/paymentcode"
 )
 
-func StartRest() {
-	controller()
+func InitRest() {
+	// init postgres database
+	db, err := config.InitPostgres()
+	if err != nil {
+		panic(err)
+	}
+
+	paymentRepository := code.NewSQLRepository(db)
+	paymentService := code.NewService(paymentRepository)
+
+	restHandler(paymentService)
 }
 
-func controller() {
-	http.HandleFunc("/health", health)
-	http.HandleFunc("/hello-world", helloWorld)
+func restHandler(paymentSvc code.Service) {
+	// healthcheck Controller
+	healthcheck.RegisterCtrl()
 
+	// paymentCode Controller
+	code.RegisterCtrl(paymentSvc)
+
+	//TODO update the logger in here
 	fmt.Print("Starting server on port 3000\n")
 	err := http.ListenAndServe(":3000", nil)
 	if err != nil {
 		log.Fatal(err)
 	}
-}
-
-func health(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		http.NotFound(w, r)
-		return
-	}
-
-	type response struct {
-		Status string `json:"status"`
-	}
-
-	data := response{"healthy"}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(data)
-}
-
-func helloWorld(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		http.NotFound(w, r)
-		return
-	}
-
-	type response struct {
-		Message string `json:"message"`
-	}
-
-	data := response{"hello world"}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(data)
 }
