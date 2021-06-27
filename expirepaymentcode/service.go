@@ -1,9 +1,12 @@
 package expirecode
 
-import "fmt"
+import (
+	"context"
+	"time"
+)
 
 type Service interface {
-	FindExpiredPaymentCode() error
+	ExpiringPaymentCode() (int64, error)
 }
 
 type defaultService struct {
@@ -16,8 +19,15 @@ func NewService(repo repository) Service {
 	}
 }
 
-func (s defaultService) FindExpiredPaymentCode() error {
-	fmt.Printf("Started on service level\n")
-	s.repo.GetExpiredPaymentCode()
-	return nil
+func (s defaultService) ExpiringPaymentCode() (int64, error) {
+	fiveSecond := 5 * time.Second
+	contextTimeout, cancel := context.WithTimeout(context.TODO(), fiveSecond)
+	defer cancel()
+
+	now := time.Now()
+	updated, err := s.repo.ExpiringPaymentCode(contextTimeout, now)
+	if err != nil {
+		return 0, err
+	}
+	return updated, nil
 }
