@@ -3,6 +3,7 @@ package code
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 
 	"github.com/nadhiljanitra/nadhil-golang-training-beginner/common"
 )
@@ -78,4 +79,16 @@ func (e paymentEndpoint) generatePaymentCode(w http.ResponseWriter, r *http.Requ
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(paymentCode)
 	return
+}
+
+func getPaymentCodeIDFromUrl(url string) string {
+	var baseUrl = "/payment-codes/"
+	paymentCode := strings.TrimPrefix(url, baseUrl)
+
+	return paymentCode
+}
+
+func validateBaseURL(url string) bool {
+	var baseUrl = "/payment-codes"
+	return strings.HasPrefix(url, baseUrl)
 }

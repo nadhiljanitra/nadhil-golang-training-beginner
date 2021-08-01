@@ -10,20 +10,6 @@ import (
 )
 
 // Create a testing using ginkgo <> gomega package
-
-type fakeRepository struct {
-	findPaymentCodeByIdFn func(ctx context.Context, id int) (PaymentCode, error)
-	generatePaymentCodeFn func(ctx context.Context, request PaymentCode) (PaymentCode, error)
-}
-
-func (f fakeRepository) FindPaymentCodeById(ctx context.Context, id int) (PaymentCode, error) {
-	return f.findPaymentCodeByIdFn(ctx, id)
-}
-
-func (f fakeRepository) GeneratePaymentCode(ctx context.Context, request PaymentCode) (PaymentCode, error) {
-	return f.generatePaymentCodeFn(ctx, request)
-}
-
 var _ = Describe("Service", func() {
 	Context("Find payment code by ID", func() {
 		var createdPaymentCode PaymentCode
