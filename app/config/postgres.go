@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
+	"time"
 
 	_ "github.com/lib/pq"
 )
@@ -23,8 +24,8 @@ func InitPostgres() (*sql.DB, error) {
 	if err != nil {
 		panic(err)
 	}
-
 	// defer dbConn.Close()
+	dbConn.SetConnMaxLifetime(time.Second * 200)
 
 	err = dbConn.Ping()
 	if err != nil {
