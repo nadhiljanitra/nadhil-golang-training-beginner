@@ -16,3 +16,9 @@
 
 # env var
 .env
+
+# docker
+.docker
+
+# postgres
+postgres-data
