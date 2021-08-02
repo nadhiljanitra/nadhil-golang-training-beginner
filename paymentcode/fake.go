@@ -23,12 +23,17 @@ func randomPaymentCode() PaymentCode {
 }
 
 type FakeService struct {
-	findPaymentCodeByIdFn func(id string) (PaymentCode, error)
-	generatePaymentCodeFn func(reqBody reqBodyPaymentCode) (PaymentCode, error)
+	findPaymentCodeByIdFn   func(id string) (PaymentCode, error)
+	findPaymentCodeByCodeFn func(code string) (PaymentCode, error)
+	generatePaymentCodeFn   func(reqBody reqBodyPaymentCode) (PaymentCode, error)
 }
 
 func (f FakeService) FindPaymentCodeById(id string) (PaymentCode, error) {
 	return f.findPaymentCodeByIdFn(id)
+}
+
+func (f FakeService) FindPaymentCodeByCode(code string) (PaymentCode, error) {
+	return f.findPaymentCodeByCodeFn(code)
 }
 
 func (f FakeService) GeneratePaymentCode(reqBody reqBodyPaymentCode) (PaymentCode, error) {

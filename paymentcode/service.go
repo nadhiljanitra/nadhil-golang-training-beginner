@@ -11,6 +11,7 @@ import (
 
 type Service interface {
 	FindPaymentCodeById(id string) (PaymentCode, error)
+	FindPaymentCodeByCode(code string) (PaymentCode, error)
 	GeneratePaymentCode(reqBody reqBodyPaymentCode) (PaymentCode, error)
 }
 
@@ -45,6 +46,12 @@ func (d defaultService) FindPaymentCodeById(id string) (PaymentCode, error) {
 	}
 
 	return paymentCode, nil
+}
+
+func (d defaultService) FindPaymentCodeByCode(code string) (PaymentCode, error) {
+	// implement new repo to find payment code by code
+
+	return PaymentCode{}, nil
 }
 
 func (d defaultService) GeneratePaymentCode(reqBody reqBodyPaymentCode) (PaymentCode, error) {
