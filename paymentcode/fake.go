@@ -41,8 +41,9 @@ func (f FakeService) GeneratePaymentCode(reqBody reqBodyPaymentCode) (PaymentCod
 }
 
 type fakeRepository struct {
-	findPaymentCodeByIdFn func(ctx context.Context, id int) (PaymentCode, error)
-	generatePaymentCodeFn func(ctx context.Context, request PaymentCode) (PaymentCode, error)
+	findPaymentCodeByIdFn   func(ctx context.Context, id int) (PaymentCode, error)
+	generatePaymentCodeFn   func(ctx context.Context, request PaymentCode) (PaymentCode, error)
+	findPaymentCodeByCodeFn func(ctx context.Context, code string) (PaymentCode, error)
 }
 
 func (f fakeRepository) FindPaymentCodeById(ctx context.Context, id int) (PaymentCode, error) {
@@ -51,4 +52,8 @@ func (f fakeRepository) FindPaymentCodeById(ctx context.Context, id int) (Paymen
 
 func (f fakeRepository) GeneratePaymentCode(ctx context.Context, request PaymentCode) (PaymentCode, error) {
 	return f.generatePaymentCodeFn(ctx, request)
+}
+
+func (f fakeRepository) FindPaymentCodeByCode(ctx context.Context, code string) (PaymentCode, error) {
+	return f.findPaymentCodeByCodeFn(ctx, code)
 }

@@ -3,6 +3,8 @@ package inquiry
 import (
 	"context"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type Service interface {
@@ -23,8 +25,15 @@ func (s defaultService) CreateInquiry(transactionID string, paymentCode string) 
 	ctx, cancel := context.WithTimeout(context.TODO(), time.Second*3)
 	defer cancel()
 
-	err := s.repo.CreateInquiry(ctx, transactionID, paymentCode)
-	if err != nil {
+	ID := uuid.New().String()
+
+	params := CreateInquiryParam{
+		ID:            ID,
+		TransactionID: transactionID,
+		PaymentCode:   paymentCode,
+	}
+
+	if err := s.repo.CreateInquiry(ctx, params); err != nil {
 		return err
 	}
 

@@ -17,11 +17,12 @@ type HTTPError struct {
 }
 
 var (
-	ErrNotFound    = errors.New("not found")
-	ErrIllegalArg  = errors.New("illegal arg")
-	ErrUnsupported = errors.New("unsupported")
-	ErrPersistence = errors.New("persistence issue")
-	ErrUnexpected  = errors.New("unexpected")
+	ErrNotFound         = errors.New("not found")
+	ErrIllegalArg       = errors.New("illegal arg")
+	ErrUnsupported      = errors.New("unsupported")
+	ErrPersistence      = errors.New("persistence issue")
+	ErrUnexpected       = errors.New("unexpected")
+	ErrDuplicateInquiry = errors.New("Duplicate Inquiry")
 )
 
 var errorMapping = map[error]HTTPError{
@@ -29,8 +30,9 @@ var errorMapping = map[error]HTTPError{
 	ErrIllegalArg:  NewHTTPErrorResponse(http.StatusBadRequest, "API_VALIDATION_ERROR"),
 	ErrUnsupported: NewHTTPErrorResponse(http.StatusNotImplemented, "UNIMPLEMENTED"),
 
-	ErrPersistence: NewHTTPErrorResponse(http.StatusInternalServerError, "SERVER_ERROR"),
-	ErrUnexpected:  NewHTTPErrorResponse(http.StatusInternalServerError, "SERVER_ERROR"),
+	ErrPersistence:      NewHTTPErrorResponse(http.StatusInternalServerError, "SERVER_ERROR"),
+	ErrUnexpected:       NewHTTPErrorResponse(http.StatusInternalServerError, "SERVER_ERROR"),
+	ErrDuplicateInquiry: NewHTTPErrorResponse(http.StatusConflict, "DUPLICATE_ERROR"),
 }
 
 func ErrorHandler(err error, w http.ResponseWriter, r *http.Request) {

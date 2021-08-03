@@ -3,6 +3,7 @@ package code
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strconv"
 	"time"
 
@@ -49,9 +50,18 @@ func (d defaultService) FindPaymentCodeById(id string) (PaymentCode, error) {
 }
 
 func (d defaultService) FindPaymentCodeByCode(code string) (PaymentCode, error) {
-	// implement new repo to find payment code by code
+	fiveSecond := 5 * time.Second
+	contextTimeout, cancel := context.WithTimeout(context.TODO(), fiveSecond)
+	defer cancel()
 
-	return PaymentCode{}, nil
+	fmt.Println(code)
+
+	paymentCode, err := d.repo.FindPaymentCodeByCode(contextTimeout, code)
+	if err != nil {
+		return PaymentCode{}, err
+	}
+
+	return paymentCode, nil
 }
 
 func (d defaultService) GeneratePaymentCode(reqBody reqBodyPaymentCode) (PaymentCode, error) {

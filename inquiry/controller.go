@@ -66,13 +66,13 @@ func (e endpoint) CreateInquiry(w http.ResponseWriter, r *http.Request) {
 	resBody := ResponseBody{
 		PaymentCode: paymentCode.PaymentCode,
 		// TODO add amount on payment code
-		Amount: 0,
+		Amount: 10,
 		Name:   paymentCode.Name,
 		Status: paymentCode.Status,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
+	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(resBody)
 	return
 }
