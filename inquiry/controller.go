@@ -55,6 +55,7 @@ func (e endpoint) CreateInquiry(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if paymentCode.Status != code.Active {
+		// TODO handle if paymentcode INACTIVE
 		return
 	}
 

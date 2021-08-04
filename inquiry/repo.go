@@ -3,6 +3,7 @@ package inquiry
 import (
 	"context"
 	"database/sql"
+	"errors"
 
 	"github.com/lib/pq"
 	"github.com/nadhiljanitra/nadhil-golang-training-beginner/common"
@@ -10,7 +11,7 @@ import (
 
 type repository interface {
 	CreateInquiry(ctx context.Context, params CreateInquiryParam) error
-	GetInquiry(ctx context.Context, transactionID string) error
+	GetInquiryByTransactionID(ctx context.Context, transactionID string) (Inquiry, error)
 }
 
 func NewSQLRepository(db *sql.DB) repository {
@@ -43,6 +44,38 @@ func (s sqlRepository) CreateInquiry(ctx context.Context, i CreateInquiryParam) 
 	return nil
 }
 
-func (s sqlRepository) GetInquiry(ctx context.Context, transactionID string) error {
-	return nil
+func (s sqlRepository) GetInquiryByTransactionID(ctx context.Context, transactionID string) (Inquiry, error) {
+	var ID string
+	var trxID string
+	var paymentCode string
+
+	row := s.DB.QueryRowContext(ctx, `
+	SELECT 
+	id, 
+	transaction_id, 
+	payment_code
+	FROM inquiries 
+	WHERE transaction_id=$1`,
+		transactionID)
+
+	err := row.Scan(
+		&ID,
+		&trxID,
+		&paymentCode,
+	)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return Inquiry{}, common.ErrNotFound
+		}
+
+		return Inquiry{}, common.ErrUnexpected
+	}
+
+	result := Inquiry{
+		ID:            ID,
+		PaymentCode:   paymentCode,
+		TransactionID: trxID,
+	}
+
+	return result, nil
 }

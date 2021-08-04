@@ -3,7 +3,6 @@ package code
 import (
 	"context"
 	"errors"
-	"fmt"
 	"strconv"
 	"time"
 
@@ -53,8 +52,6 @@ func (d defaultService) FindPaymentCodeByCode(code string) (PaymentCode, error) 
 	fiveSecond := 5 * time.Second
 	contextTimeout, cancel := context.WithTimeout(context.TODO(), fiveSecond)
 	defer cancel()
-
-	fmt.Println(code)
 
 	paymentCode, err := d.repo.FindPaymentCodeByCode(contextTimeout, code)
 	if err != nil {

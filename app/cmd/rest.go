@@ -8,6 +8,7 @@ import (
 	"github.com/nadhiljanitra/nadhil-golang-training-beginner/app/config"
 	"github.com/nadhiljanitra/nadhil-golang-training-beginner/healthcheck"
 	"github.com/nadhiljanitra/nadhil-golang-training-beginner/inquiry"
+	"github.com/nadhiljanitra/nadhil-golang-training-beginner/payment"
 	code "github.com/nadhiljanitra/nadhil-golang-training-beginner/paymentcode"
 )
 
@@ -18,24 +19,30 @@ func InitRest() {
 		panic(err)
 	}
 
-	paymentRepository := code.NewSQLRepository(db)
-	paymentService := code.NewService(paymentRepository)
+	codeRepository := code.NewSQLRepository(db)
+	codeService := code.NewService(codeRepository)
 
 	inquiryRepository := inquiry.NewSQLRepository(db)
 	inquiryService := inquiry.NewService(inquiryRepository)
 
-	restHandler(paymentService, inquiryService)
+	paymentRepository := payment.NewSQLRepository(db)
+	paymentService := payment.NewService(paymentRepository)
+
+	restHandler(codeService, inquiryService, paymentService)
 }
 
-func restHandler(paymentSvc code.Service, inquirySvc inquiry.Service) {
+func restHandler(codeService code.Service, inquirySvc inquiry.Service, paymentSvc payment.Service) {
 	// healthcheck Controller
 	healthcheck.RegisterCtrl()
 
 	// paymentCode Controller
-	code.RegisterCtrl(paymentSvc)
+	code.RegisterCtrl(codeService)
 
 	// inquiry Controller
-	inquiry.RegisterCtrl(paymentSvc, inquirySvc)
+	inquiry.RegisterCtrl(codeService, inquirySvc)
+
+	// payment Controller
+	payment.RegisterCtrl(codeService, inquirySvc, paymentSvc)
 
 	//TODO update the logger in here
 	fmt.Print("Starting server on port 3000\n")
