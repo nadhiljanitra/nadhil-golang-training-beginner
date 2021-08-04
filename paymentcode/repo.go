@@ -30,6 +30,7 @@ func (s sqlRepository) FindPaymentCodeById(ctx context.Context, id int) (Payment
 	var paymentCode string
 	var name string
 	var status string
+	var amount int
 	var expirationDate string
 	var createdAt time.Time
 	var updatedAt time.Time
@@ -39,7 +40,8 @@ func (s sqlRepository) FindPaymentCodeById(ctx context.Context, id int) (Payment
 	id, 
 	payment_code, 
 	name, 
-	status, 
+	status,
+	amount, 
 	expiration_date, 
 	created_at, 
 	updated_at 
@@ -52,6 +54,7 @@ func (s sqlRepository) FindPaymentCodeById(ctx context.Context, id int) (Payment
 		&paymentCode,
 		&name,
 		&status,
+		&amount,
 		&expirationDate,
 		&createdAt,
 		&updatedAt,
@@ -69,6 +72,7 @@ func (s sqlRepository) FindPaymentCodeById(ctx context.Context, id int) (Payment
 		PaymentCode:    paymentCode,
 		Name:           name,
 		Status:         status,
+		Amount:         amount,
 		ExpirationDate: expirationDate,
 		CreatedAt:      createdAt,
 		UpdatedAt:      updatedAt,
@@ -82,10 +86,10 @@ func (s sqlRepository) GeneratePaymentCode(ctx context.Context, r PaymentCode) (
 
 	result := s.DB.QueryRowContext(ctx, `
 	INSERT into payment_codes 
-	(payment_code, name, status, expiration_date, created_at, updated_at) 
-	values ($1,$2,$3,$4,$5,$6) 
+	(payment_code, name, status, expiration_date, created_at, updated_at, amount) 
+	values ($1,$2,$3,$4,$5,$6,$7) 
 	RETURNING id`,
-		r.PaymentCode, r.Name, r.Status, r.ExpirationDate, r.CreatedAt, r.UpdatedAt)
+		r.PaymentCode, r.Name, r.Status, r.ExpirationDate, r.CreatedAt, r.UpdatedAt, r.Amount)
 	err := result.Scan(&ID)
 	if err != nil {
 		return PaymentCode{}, err
@@ -96,6 +100,7 @@ func (s sqlRepository) GeneratePaymentCode(ctx context.Context, r PaymentCode) (
 		PaymentCode:    r.PaymentCode,
 		Name:           r.Name,
 		Status:         r.Status,
+		Amount:         r.Amount,
 		ExpirationDate: r.ExpirationDate,
 		CreatedAt:      r.CreatedAt,
 		UpdatedAt:      r.UpdatedAt,
@@ -109,6 +114,7 @@ func (s sqlRepository) FindPaymentCodeByCode(ctx context.Context, code string) (
 	var paymentCode string
 	var name string
 	var status string
+	var amount int
 	var expirationDate string
 	var createdAt time.Time
 	var updatedAt time.Time
@@ -118,7 +124,8 @@ func (s sqlRepository) FindPaymentCodeByCode(ctx context.Context, code string) (
 	id, 
 	payment_code,
 	name, 
-	status, 
+	status,
+	amount, 
 	expiration_date, 
 	created_at, 
 	updated_at 
@@ -131,6 +138,7 @@ func (s sqlRepository) FindPaymentCodeByCode(ctx context.Context, code string) (
 		&paymentCode,
 		&name,
 		&status,
+		&amount,
 		&expirationDate,
 		&createdAt,
 		&updatedAt,
@@ -148,6 +156,7 @@ func (s sqlRepository) FindPaymentCodeByCode(ctx context.Context, code string) (
 		PaymentCode:    paymentCode,
 		Name:           name,
 		Status:         status,
+		Amount:         amount,
 		ExpirationDate: expirationDate,
 		CreatedAt:      createdAt,
 		UpdatedAt:      updatedAt,

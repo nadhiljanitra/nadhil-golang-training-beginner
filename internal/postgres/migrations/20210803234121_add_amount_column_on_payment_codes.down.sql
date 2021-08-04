@@ -1,0 +1,6 @@
+BEGIN;
+
+ALTER TABLE payment_codes
+DROP COLUMN IF EXISTS amount;
+
+COMMIT;
