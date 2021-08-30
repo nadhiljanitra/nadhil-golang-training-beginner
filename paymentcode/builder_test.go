@@ -13,6 +13,7 @@ import (
 type arg struct {
 	Name        *string `json:"name"`
 	PaymentCode *string `json:"payment_code"`
+	Amount      int     `json:"amount"`
 }
 
 var argName string = "test"
@@ -23,10 +24,11 @@ var collections = []struct {
 	out PaymentCode
 }{
 	{
-		arg{&argName, &argCodes}, PaymentCode{
+		arg{&argName, &argCodes, 200}, PaymentCode{
 			Name:           "test",
 			PaymentCode:    "test1234",
 			Status:         "ACTIVE",
+			Amount:         200,
 			CreatedAt:      time.Now().UTC().Truncate(1 * time.Second),
 			UpdatedAt:      time.Now().UTC().Truncate(1 * time.Second),
 			ExpirationDate: time.Now().UTC().AddDate(50, 0, 0).Format(time.RFC3339),
@@ -48,8 +50,8 @@ var failedData = []struct {
 	in  arg
 	out PaymentCode
 }{
-	{arg{&argName, nil}, PaymentCode{}},
-	{arg{nil, nil}, PaymentCode{}},
+	{arg{&argName, nil, 0}, PaymentCode{}},
+	{arg{nil, nil, 0}, PaymentCode{}},
 }
 
 func TestInValidData(t *testing.T) {

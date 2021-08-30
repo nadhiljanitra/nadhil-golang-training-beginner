@@ -12,6 +12,7 @@ import (
 type repository interface {
 	FindPaymentCodeById(ctx context.Context, id int) (PaymentCode, error)
 	GeneratePaymentCode(ctx context.Context, request PaymentCode) (PaymentCode, error)
+	FindPaymentCodeByCode(ctx context.Context, code string) (PaymentCode, error)
 }
 
 func NewSQLRepository(db *sql.DB) repository {
@@ -29,6 +30,7 @@ func (s sqlRepository) FindPaymentCodeById(ctx context.Context, id int) (Payment
 	var paymentCode string
 	var name string
 	var status string
+	var amount int
 	var expirationDate string
 	var createdAt time.Time
 	var updatedAt time.Time
@@ -38,7 +40,8 @@ func (s sqlRepository) FindPaymentCodeById(ctx context.Context, id int) (Payment
 	id, 
 	payment_code, 
 	name, 
-	status, 
+	status,
+	amount, 
 	expiration_date, 
 	created_at, 
 	updated_at 
@@ -51,6 +54,7 @@ func (s sqlRepository) FindPaymentCodeById(ctx context.Context, id int) (Payment
 		&paymentCode,
 		&name,
 		&status,
+		&amount,
 		&expirationDate,
 		&createdAt,
 		&updatedAt,
@@ -68,6 +72,7 @@ func (s sqlRepository) FindPaymentCodeById(ctx context.Context, id int) (Payment
 		PaymentCode:    paymentCode,
 		Name:           name,
 		Status:         status,
+		Amount:         amount,
 		ExpirationDate: expirationDate,
 		CreatedAt:      createdAt,
 		UpdatedAt:      updatedAt,
@@ -81,10 +86,10 @@ func (s sqlRepository) GeneratePaymentCode(ctx context.Context, r PaymentCode) (
 
 	result := s.DB.QueryRowContext(ctx, `
 	INSERT into payment_codes 
-	(payment_code, name, status, expiration_date, created_at, updated_at) 
-	values ($1,$2,$3,$4,$5,$6) 
+	(payment_code, name, status, expiration_date, created_at, updated_at, amount) 
+	values ($1,$2,$3,$4,$5,$6,$7) 
 	RETURNING id`,
-		r.PaymentCode, r.Name, r.Status, r.ExpirationDate, r.CreatedAt, r.UpdatedAt)
+		r.PaymentCode, r.Name, r.Status, r.ExpirationDate, r.CreatedAt, r.UpdatedAt, r.Amount)
 	err := result.Scan(&ID)
 	if err != nil {
 		return PaymentCode{}, err
@@ -95,10 +100,67 @@ func (s sqlRepository) GeneratePaymentCode(ctx context.Context, r PaymentCode) (
 		PaymentCode:    r.PaymentCode,
 		Name:           r.Name,
 		Status:         r.Status,
+		Amount:         r.Amount,
 		ExpirationDate: r.ExpirationDate,
 		CreatedAt:      r.CreatedAt,
 		UpdatedAt:      r.UpdatedAt,
 	}
 
 	return paymentCode, nil
+}
+
+func (s sqlRepository) FindPaymentCodeByCode(ctx context.Context, code string) (PaymentCode, error) {
+	var ID int
+	var paymentCode string
+	var name string
+	var status string
+	var amount int
+	var expirationDate string
+	var createdAt time.Time
+	var updatedAt time.Time
+
+	row := s.DB.QueryRowContext(ctx, `
+	SELECT 
+	id, 
+	payment_code,
+	name, 
+	status,
+	amount, 
+	expiration_date, 
+	created_at, 
+	updated_at 
+	FROM payment_codes 
+	WHERE payment_code=$1`,
+		code)
+
+	err := row.Scan(
+		&ID,
+		&paymentCode,
+		&name,
+		&status,
+		&amount,
+		&expirationDate,
+		&createdAt,
+		&updatedAt,
+	)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return PaymentCode{}, common.ErrNotFound
+		}
+
+		return PaymentCode{}, err
+	}
+
+	result := PaymentCode{
+		ID:             ID,
+		PaymentCode:    paymentCode,
+		Name:           name,
+		Status:         status,
+		Amount:         amount,
+		ExpirationDate: expirationDate,
+		CreatedAt:      createdAt,
+		UpdatedAt:      updatedAt,
+	}
+
+	return result, nil
 }

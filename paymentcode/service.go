@@ -11,6 +11,7 @@ import (
 
 type Service interface {
 	FindPaymentCodeById(id string) (PaymentCode, error)
+	FindPaymentCodeByCode(code string) (PaymentCode, error)
 	GeneratePaymentCode(reqBody reqBodyPaymentCode) (PaymentCode, error)
 }
 
@@ -40,6 +41,19 @@ func (d defaultService) FindPaymentCodeById(id string) (PaymentCode, error) {
 	}
 
 	paymentCode, err := d.repo.FindPaymentCodeById(contextTimeout, ID)
+	if err != nil {
+		return PaymentCode{}, err
+	}
+
+	return paymentCode, nil
+}
+
+func (d defaultService) FindPaymentCodeByCode(code string) (PaymentCode, error) {
+	fiveSecond := 5 * time.Second
+	contextTimeout, cancel := context.WithTimeout(context.TODO(), fiveSecond)
+	defer cancel()
+
+	paymentCode, err := d.repo.FindPaymentCodeByCode(contextTimeout, code)
 	if err != nil {
 		return PaymentCode{}, err
 	}

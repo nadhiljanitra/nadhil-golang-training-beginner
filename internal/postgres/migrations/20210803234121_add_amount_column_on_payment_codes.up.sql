@@ -1,0 +1,6 @@
+BEGIN;
+
+ALTER TABLE payment_codes
+ADD COLUMN IF NOT EXISTS amount NUMERIC;
+
+COMMIT;

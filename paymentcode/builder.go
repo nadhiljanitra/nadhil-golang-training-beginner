@@ -14,6 +14,7 @@ type PaymentCode struct {
 	Name           string    `json:"name"`
 	Status         string    `json:"status"`
 	ExpirationDate string    `json:"expiration_date"`
+	Amount         int       `json:"amount"`
 	CreatedAt      time.Time `json:"created_at"`
 	UpdatedAt      time.Time `json:"updated_at"`
 }
@@ -32,6 +33,7 @@ func NewPaymentCode(bodyRequest reqBodyPaymentCode) (PaymentCode, error) {
 		PaymentCode:    *bodyRequest.PaymentCode,
 		Name:           *bodyRequest.Name,
 		Status:         Active,
+		Amount:         bodyRequest.Amount,
 		CreatedAt:      time.Now().UTC().Truncate(1 * time.Second),
 		UpdatedAt:      time.Now().UTC().Truncate(1 * time.Second),
 		ExpirationDate: time.Now().UTC().AddDate(50, 0, 0).Format(time.RFC3339),

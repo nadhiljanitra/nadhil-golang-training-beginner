@@ -15,7 +15,7 @@ func TestGetPaymentCodeByID(t *testing.T) {
 	paymentCodeHandler := paymentEndpoint{
 		codeService: FakeService{
 			findPaymentCodeByIdFn: func(id string) (PaymentCode, error) {
-				return randomPaymentCode(), nil
+				return RandomPaymentCode(), nil
 			},
 		},
 	}
@@ -40,7 +40,7 @@ func TestGetPaymentCodeByID(t *testing.T) {
 		t.Errorf("Failed on unmarshalling response")
 	}
 
-	expected := randomPaymentCode()
+	expected := RandomPaymentCode()
 	if responseJson != expected {
 		t.Errorf("handler returned unexpected body: got %v want %v", responseJson, expected)
 	}
@@ -99,7 +99,7 @@ func TestGeneratePaymentCode(t *testing.T) {
 	paymentCodeHandler := paymentEndpoint{
 		codeService: FakeService{
 			generatePaymentCodeFn: func(reqBody reqBodyPaymentCode) (PaymentCode, error) {
-				return randomPaymentCode(), nil
+				return RandomPaymentCode(), nil
 			},
 		},
 	}
@@ -130,7 +130,7 @@ func TestGeneratePaymentCode(t *testing.T) {
 		t.Errorf("Failed on unmarshalling response")
 	}
 
-	expected := randomPaymentCode()
+	expected := RandomPaymentCode()
 	if responseJson != expected {
 		t.Errorf("handler returned unexpected body: got %v want %v", responseJson, expected)
 	}

@@ -4,9 +4,13 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/nadhiljanitra/nadhil-golang-training-beginner/app/config"
 	"github.com/nadhiljanitra/nadhil-golang-training-beginner/healthcheck"
+	"github.com/nadhiljanitra/nadhil-golang-training-beginner/inquiry"
+	"github.com/nadhiljanitra/nadhil-golang-training-beginner/payment"
+	"github.com/nadhiljanitra/nadhil-golang-training-beginner/payment/publisher"
 	code "github.com/nadhiljanitra/nadhil-golang-training-beginner/paymentcode"
 )
 
@@ -17,18 +21,35 @@ func InitRest() {
 		panic(err)
 	}
 
-	paymentRepository := code.NewSQLRepository(db)
-	paymentService := code.NewService(paymentRepository)
+	queueURL := os.Getenv("SQS_QUEUE_URL")
 
-	restHandler(paymentService)
+	codeRepository := code.NewSQLRepository(db)
+	codeService := code.NewService(codeRepository)
+
+	inquiryRepository := inquiry.NewSQLRepository(db)
+	inquiryService := inquiry.NewService(inquiryRepository)
+
+	sqsClient := config.InitSQSClient()
+	publisher := publisher.NewSQSPublisher(sqsClient, queueURL)
+
+	paymentRepository := payment.NewSQLRepository(db)
+	paymentService := payment.NewService(paymentRepository, publisher)
+
+	restHandler(codeService, inquiryService, paymentService)
 }
 
-func restHandler(paymentSvc code.Service) {
+func restHandler(codeService code.Service, inquirySvc inquiry.Service, paymentSvc payment.Service) {
 	// healthcheck Controller
 	healthcheck.RegisterCtrl()
 
 	// paymentCode Controller
-	code.RegisterCtrl(paymentSvc)
+	code.RegisterCtrl(codeService)
+
+	// inquiry Controller
+	inquiry.RegisterCtrl(codeService, inquirySvc)
+
+	// payment Controller
+	payment.RegisterCtrl(codeService, inquirySvc, paymentSvc)
 
 	//TODO update the logger in here
 	fmt.Print("Starting server on port 3000\n")
