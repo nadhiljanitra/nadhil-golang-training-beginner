@@ -2,9 +2,11 @@ package payment
 
 import (
 	"context"
+	"encoding/json"
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/nadhiljanitra/nadhil-golang-training-beginner/payment/publisher"
 )
 
 type Service interface {
@@ -12,12 +14,14 @@ type Service interface {
 }
 
 type defaultService struct {
-	repo repository
+	repo      repository
+	publisher publisher.Publisher
 }
 
-func NewService(repo repository) Service {
+func NewService(repo repository, publisher publisher.Publisher) Service {
 	return defaultService{
-		repo: repo,
+		repo:      repo,
+		publisher: publisher,
 	}
 }
 
@@ -40,6 +44,11 @@ func (s defaultService) CreatePayment(payment Payment) error {
 	}
 
 	if err := s.repo.CreatePayment(ctx, params); err != nil {
+		return err
+	}
+
+	message, _ := json.Marshal(payment)
+	if err := s.publisher.Publish(ctx, message); err != nil {
 		return err
 	}
 

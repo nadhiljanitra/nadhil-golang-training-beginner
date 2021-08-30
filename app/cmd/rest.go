@@ -4,11 +4,13 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/nadhiljanitra/nadhil-golang-training-beginner/app/config"
 	"github.com/nadhiljanitra/nadhil-golang-training-beginner/healthcheck"
 	"github.com/nadhiljanitra/nadhil-golang-training-beginner/inquiry"
 	"github.com/nadhiljanitra/nadhil-golang-training-beginner/payment"
+	"github.com/nadhiljanitra/nadhil-golang-training-beginner/payment/publisher"
 	code "github.com/nadhiljanitra/nadhil-golang-training-beginner/paymentcode"
 )
 
@@ -19,14 +21,19 @@ func InitRest() {
 		panic(err)
 	}
 
+	queueURL := os.Getenv("SQS_QUEUE_URL")
+
 	codeRepository := code.NewSQLRepository(db)
 	codeService := code.NewService(codeRepository)
 
 	inquiryRepository := inquiry.NewSQLRepository(db)
 	inquiryService := inquiry.NewService(inquiryRepository)
 
+	sqsClient := config.InitSQSClient()
+	publisher := publisher.NewSQSPublisher(sqsClient, queueURL)
+
 	paymentRepository := payment.NewSQLRepository(db)
-	paymentService := payment.NewService(paymentRepository)
+	paymentService := payment.NewService(paymentRepository, publisher)
 
 	restHandler(codeService, inquiryService, paymentService)
 }

@@ -3,6 +3,7 @@ module github.com/nadhiljanitra/nadhil-golang-training-beginner
 go 1.14
 
 require (
+	github.com/aws/aws-sdk-go v1.40.32
 	github.com/golang-migrate/migrate/v4 v4.14.1
 	github.com/google/uuid v1.2.0
 	github.com/lib/pq v1.10.1
@@ -10,4 +11,5 @@ require (
 	github.com/onsi/gomega v1.13.0
 	github.com/stretchr/testify v1.7.0
 	github.com/testcontainers/testcontainers-go v0.11.0
+	golang.org/x/net v0.0.0-20210614182718-04defd469f4e
 )

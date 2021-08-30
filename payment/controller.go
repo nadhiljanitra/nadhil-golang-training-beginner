@@ -71,9 +71,6 @@ func (e endpoint) CreatePayment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//TODO create func to mark payment_code as PAID
-	//TODO publish payment into sqs
-
 	resBody := ResponseBody{
 		TransactionID: inquiryData.TransactionID,
 		Amount:        reqBody.Amount,
