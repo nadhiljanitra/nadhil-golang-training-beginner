@@ -10,7 +10,7 @@ var (
 	fakeName        = "Local Test"
 )
 
-func randomPaymentCode() PaymentCode {
+func RandomPaymentCode() PaymentCode {
 	return PaymentCode{
 		ID:             1,
 		PaymentCode:    fakePaymentCode,
@@ -24,7 +24,7 @@ func randomPaymentCode() PaymentCode {
 
 type FakeService struct {
 	findPaymentCodeByIdFn   func(id string) (PaymentCode, error)
-	findPaymentCodeByCodeFn func(code string) (PaymentCode, error)
+	FindPaymentCodeByCodeFn func(code string) (PaymentCode, error)
 	generatePaymentCodeFn   func(reqBody reqBodyPaymentCode) (PaymentCode, error)
 }
 
@@ -33,7 +33,7 @@ func (f FakeService) FindPaymentCodeById(id string) (PaymentCode, error) {
 }
 
 func (f FakeService) FindPaymentCodeByCode(code string) (PaymentCode, error) {
-	return f.findPaymentCodeByCodeFn(code)
+	return f.FindPaymentCodeByCodeFn(code)
 }
 
 func (f FakeService) GeneratePaymentCode(reqBody reqBodyPaymentCode) (PaymentCode, error) {
